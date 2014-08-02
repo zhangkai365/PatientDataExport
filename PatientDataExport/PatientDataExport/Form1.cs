@@ -20,17 +20,21 @@ namespace PatientDataExport
             InitializeComponent();
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void btn_beginProgress_Click(object sender, EventArgs e)
         {
-            //禁用开始处理按钮
+            //禁用界面上面所有按钮
             btn_beginProgress.Enabled = false;
+            btn_selectSavePath.Enabled = false;
+            datePicker_startDate.Enabled = false;
             //患者的编号
             int peoplecount = 0;
             //设置要查询的时间
             DateTime startDate ;
-            startDate = Convert.ToDateTime("2014-01-01 00:00:00");
+            startDate = datePicker_startDate.Value;
+            //控制输入的日期的有效值
             DateTime endDate;
-            endDate = Convert.ToDateTime("2014-12-31 00:00:00");
+            endDate = datePicker_startDate.Value.AddYears(1);
+            lab_endDate.Text = endDate.ToString();
             //文件的存储路径
             String FilePath = txtbox_FilePath.Text;
             Excel.Application myExcel = new Excel.Application();
@@ -39,7 +43,11 @@ namespace PatientDataExport
             Excel.Worksheet myWorkSheet = myWorkbook.Worksheets[1];
             medbaseEntities myMedBaseEntities = new medbaseEntities();
             //查询所有的待查询时间段内检查的患者
-            var ExportResult = from s1 in myMedBaseEntities.hcheckmemb where s1.checkdate > startDate && s1.checkdate < endDate select s1;
+            //查询条件  a0704 任职级别 01 副市级 02 正局级 03 副局级 04 正高 05 副高 14 院士
+            //查询条件  a6405 在职情况
+            var ExportResult = from s1 in myMedBaseEntities.hcheckmemb 
+                               where s1.checkdate > startDate && s1.checkdate < endDate && (s1.a0704 == "01" || s1.a0704 == "02" || s1.a0704 == "03" || s1.a0704 == "04" || s1.a0704 == "05" || s1.a0704 == "14" || s1.a6405 == "02")  
+                               select s1;
             //总数
             totalNum.Text = ExportResult.Count().ToString();
             //遍历所有的患者
@@ -50,36 +58,26 @@ namespace PatientDataExport
                 progressNum.Text = peoplecount.ToString();
                 //患者的编号
                 myWorkSheet.Cells[peoplecount, 1] = peoplecount;
-                //姓名
-                myWorkSheet.Cells[peoplecount, 2] = checkpatient.a0101;
+                //姓名 a0101 使用membcode代替
+                myWorkSheet.Cells[peoplecount, 2] = checkpatient.membcode;
                 //性别
                 myWorkSheet.Cells[peoplecount, 3] = checkpatient.a0107;
                 //出生年月
                 try
                 {
-                    var searchBirthday = (from s2 in myMedBaseEntities.hbasememb where s2.membcode == checkpatient.membcode  select s2).First();
+                    var searchBirthday = (from s2 in myMedBaseEntities.hbasememb where s2.membcode == checkpatient.membcode select s2).First();
                     //出生年月
-                    myWorkSheet.Cells[peoplecount, 4] = searchBirthday.a0111.GetValueOrDefault().ToShortDateString();
+                    if (searchBirthday.a0111 == null) myWorkSheet.Cells[peoplecount, 4] = "空白";
+                    if (searchBirthday.a0111 != null) myWorkSheet.Cells[peoplecount, 4] = searchBirthday.a0111.ToString();
                     //移动电话
                     myWorkSheet.Cells[peoplecount, 6] = searchBirthday.mobileno.ToString();
                     //保健类型
                     myWorkSheet.Cells[peoplecount, 7] = searchBirthday.a0704.ToString();
                     //保健证号
-                    myWorkSheet.Cells[peoplecount, 8] = searchBirthday.medicareno.ToString();
+                    myWorkSheet.Cells[peoplecount, 8] = searchBirthday.healthcode.ToString();
                 }
-                catch
-                {
-                    //出生年月
-                    myWorkSheet.Cells[peoplecount, 4] = "空白";
-                    //移动电话
-                    myWorkSheet.Cells[peoplecount, 6] = "空白";
-                    //保健证号
-                    myWorkSheet.Cells[peoplecount, 8] = "空白";
-                }
-                finally
-                {
- 
-                }
+                catch { }
+                finally { }
                 //工作单位
                 myWorkSheet.Cells[peoplecount, 5] = checkpatient.b0105.ToString();
                 //体检医院
@@ -480,7 +478,7 @@ namespace PatientDataExport
                         myWorkSheet.Cells[peoplecount, 158 + i] = eachDisease.diagname;
                         myWorkSheet.Cells[peoplecount, 159 + i] = eachDisease.diagcode;
                         i=i+2;
-                        if (i > 32) break;
+                        if (i > 30) break;
                     }
                 }
                 catch
@@ -513,6 +511,14 @@ namespace PatientDataExport
                 txtbox_FilePath.Text = myFileDialog.FileName;
             }
         }
+
+        private void datePicker_startDate_ValueChanged(object sender, EventArgs e)
+        {
+            if (datePicker_startDate.Value > Convert.ToDateTime("2015-1-1 00:00:00")) datePicker_startDate.Value = Convert.ToDateTime("2015-1-1 00:00:00");
+            if (datePicker_startDate.Value < Convert.ToDateTime("2008-1-1 00:00:00")) datePicker_startDate.Value = Convert.ToDateTime("2008-1-1 00:00:00");
+            lab_endDate.Text = datePicker_startDate.Value.AddYears(1).ToShortDateString();
+        }
+
 
     }
 }

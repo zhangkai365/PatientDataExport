@@ -41,11 +41,12 @@ namespace PatientDataExport
             myExcel.Visible = false;
             Excel.Workbook myWorkbook = myExcel.Workbooks.Add(true);
             Excel.Worksheet myWorkSheet = myWorkbook.Worksheets[1];
+
             medbaseEntities myMedBaseEntities = new medbaseEntities();
             //查询所有的待查询时间段内检查的患者
             //查询条件  a0704 任职级别 01 副市级 02 正局级 03 副局级 04 正高 05 副高 14 院士
-            //查询条件  a6405 在职情况
-            //&& (s1.a0704 == "01" || s1.a0704 == "02" || s1.a0704 == "03" || s1.a0704 == "04" || s1.a0704 == "05" || s1.a0704 == "14" || s1.a6405 == "02")
+            //查询条件  a6405 在职情况 02 离休
+            //&& (s1.a0704 == "01" || s1.a0704 == "02" || s1.a0704 == "03" || s1.a0704 == "04" || s1.a0704 == "05" || s1.a0704 == "14")
             var ExportResult = from s1 in myMedBaseEntities.hcheckmemb
                                where s1.checkdate > startDate && s1.checkdate < endDate && (s1.a0704 == "01" || s1.a0704 == "02" || s1.a0704 == "03" || s1.a0704 == "04" || s1.a0704 == "05" || s1.a0704 == "14" || s1.a6405 == "02")  
                                select s1;
@@ -60,13 +61,47 @@ namespace PatientDataExport
                 //患者的编号
                 myWorkSheet.Cells[peoplecount, 1] = peoplecount;
                 //姓名 a0101 使用membcode代替
-                myWorkSheet.Cells[peoplecount, 2] = checkpatient.membcode;
+                myWorkSheet.Cells[peoplecount, 2] = checkpatient.a0101;
                 //性别
                 myWorkSheet.Cells[peoplecount, 3] = checkpatient.a0107;
+                //保健类型
+                if (checkpatient.a0704 != null) 
+                {
+                    switch (checkpatient.a0704)
+                    {
+                        case "01": 
+                            myWorkSheet.Cells[peoplecount, 7] = "1";
+                            break;
+                        case "02":
+                            myWorkSheet.Cells[peoplecount, 7] = "1";
+                            break;
+                        case "03":
+                            myWorkSheet.Cells[peoplecount, 7] = "1";
+                            break;
+                        case "04":
+                            myWorkSheet.Cells[peoplecount, 7] = "3";
+                            break;
+                        case "05":
+                            myWorkSheet.Cells[peoplecount, 7] = "3";
+                            break;
+                        case "14":
+                            myWorkSheet.Cells[peoplecount, 7] = "3";
+                            break;
+                        default:
+                            myWorkSheet.Cells[peoplecount, 7] = "无相符项目";
+                            break;
+
+                    }
+                }
+                //特殊的离休类型的处理
+                if (checkpatient.a6405 == "02")
+                {
+                    myWorkSheet.Cells[peoplecount, 7] = "2";
+                }
                 //出生年月
                 try
                 {
-                    var searchBirthday = (from s2 in myMedBaseEntities.hbasememb where s2.membcode == checkpatient.membcode select s2).Single();
+                    var searchBirthday = (from s2 in myMedBaseEntities.hbasememb where s2.membcode == checkpatient.membcode select s2).FirstOrDefault();
                     //出生年月
                     if (searchBirthday.a0111 == null)
                     {
@@ -88,14 +123,11 @@ namespace PatientDataExport
                     }
                     //移动电话
                     myWorkSheet.Cells[peoplecount, 6] = searchBirthday.mobileno.ToString();
-                    //保健类型
-                    myWorkSheet.Cells[peoplecount, 7] = searchBirthday.a0704.ToString();
                     //保健证号
                     myWorkSheet.Cells[peoplecount, 8] = searchBirthday.healthcode.ToString();
                 }
                 catch 
                 {
-                    myWorkSheet.Cells[peoplecount, 192] = "没有此人的基本信息";
                 }
                 finally { }
                 //工作单位

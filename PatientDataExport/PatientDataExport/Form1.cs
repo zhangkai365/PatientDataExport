@@ -42,7 +42,8 @@ namespace PatientDataExport
             Excel.Workbook myWorkbook = myExcel.Workbooks.Add(true);
             Excel.Worksheet myWorkSheet = myWorkbook.Worksheets[1];
 
-            medbaseEntities myMedBaseEntities = new medbaseEntities();
+
+            medbase201507Entities1 myMedBaseEntities = new medbase201507Entities1();
             //查询所有的待查询时间段内检查的患者
             //查询条件  a0704 任职级别 01 副市级 02 正局级 03 副局级 04 正高 05 副高 14 院士
             //查询条件  a6405 在职情况 02 离休
@@ -58,6 +59,8 @@ namespace PatientDataExport
                 //遍历每一位患者
                 peoplecount++;
                 progressNum.Text = peoplecount.ToString();
+                //设置行高
+                ((Excel.Range)myWorkSheet.Rows[peoplecount , System.Type.Missing]).RowHeight = 20;
                 //患者的编号
                 myWorkSheet.Cells[peoplecount, 1] = peoplecount;
                 //姓名 a0101 使用membcode代替
@@ -70,25 +73,25 @@ namespace PatientDataExport
                     switch (checkpatient.a0704)
                     {
                         case "01": 
-                            myWorkSheet.Cells[peoplecount, 7] = "1";
+                            myWorkSheet.Cells[peoplecount, 8] = "1";
                             break;
                         case "02":
-                            myWorkSheet.Cells[peoplecount, 7] = "1";
+                            myWorkSheet.Cells[peoplecount, 8] = "1";
                             break;
                         case "03":
-                            myWorkSheet.Cells[peoplecount, 7] = "1";
+                            myWorkSheet.Cells[peoplecount, 8] = "1";
                             break;
                         case "04":
-                            myWorkSheet.Cells[peoplecount, 7] = "3";
+                            myWorkSheet.Cells[peoplecount, 8] = "3";
                             break;
                         case "05":
-                            myWorkSheet.Cells[peoplecount, 7] = "3";
+                            myWorkSheet.Cells[peoplecount, 8] = "3";
                             break;
                         case "14":
-                            myWorkSheet.Cells[peoplecount, 7] = "3";
+                            myWorkSheet.Cells[peoplecount, 8] = "3";
                             break;
                         default:
-                            myWorkSheet.Cells[peoplecount, 7] = "无相符项目";
+                            myWorkSheet.Cells[peoplecount, 8] = "无相符项目";
                             break;
 
                     }
@@ -96,14 +99,15 @@ namespace PatientDataExport
                 //特殊的离休类型的处理
                 if (checkpatient.a6405 == "02")
                 {
-                    myWorkSheet.Cells[peoplecount, 7] = "2";
+                    myWorkSheet.Cells[peoplecount, 8] = "2";
                 }
                 //出生年月
                 try
                 {
-                    var searchBirthday = (from s2 in myMedBaseEntities.hbasememb where s2.membcode == checkpatient.membcode select s2).FirstOrDefault();
+                    //从basemember当中搜索必要的信息，如出生年月和身份证号
+                    var searchBaseMemb= (from s2 in myMedBaseEntities.hbasememb where s2.membcode == checkpatient.membcode select s2).FirstOrDefault();
                     //出生年月
-                    if (searchBirthday.a0111 == null)
+                    if (searchBaseMemb.a0111 == null)
                     {
                         try
                         {
@@ -119,12 +123,14 @@ namespace PatientDataExport
                     }
                     else
                     {
-                        myWorkSheet.Cells[peoplecount, 4] = searchBirthday.a0111.ToString();
+                        myWorkSheet.Cells[peoplecount, 4] = searchBaseMemb.a0111.ToString();
                     }
                     //移动电话
-                    myWorkSheet.Cells[peoplecount, 6] = searchBirthday.mobileno.ToString();
+                    myWorkSheet.Cells[peoplecount, 6] = searchBaseMemb.mobileno.ToString();
+                    //身份证号
+                    myWorkSheet.Cells[peoplecount, 7] = searchBaseMemb.a0177.ToString();
                     //保健证号
-                    myWorkSheet.Cells[peoplecount, 8] = searchBirthday.healthcode.ToString();
+                    myWorkSheet.Cells[peoplecount, 9] = searchBaseMemb.healthcode.ToString();
                 }
                 catch 
                 {
@@ -133,14 +139,14 @@ namespace PatientDataExport
                 //工作单位
                 myWorkSheet.Cells[peoplecount, 5] = checkpatient.b0105.ToString();
                 //体检医院
-                myWorkSheet.Cells[peoplecount, 9] = "天津医科大学总医院";
+                myWorkSheet.Cells[peoplecount, 10] = "天津医科大学总医院";
                 //各个检查结果
                 try
                 {
                     var testResult = from s3 in myMedBaseEntities.hdatadeptest where checkpatient.checkcode == s3.checkcode  select s3;
                     if (testResult == null)
                     { 
-                        myWorkSheet.Cells[peoplecount, 193] = "没有相关的检验检查结果"; 
+                        myWorkSheet.Cells[peoplecount, 194] = "没有相关的检验检查结果"; 
                     }
                     else
                     {
@@ -152,12 +158,12 @@ namespace PatientDataExport
                             //身高
                             if (eachtest.testcode == "D4.0010")
                             {
-                                myWorkSheet.Cells[peoplecount, 22] = eachtest.testresult;
+                                myWorkSheet.Cells[peoplecount, 23] = eachtest.testresult;
                             }
                             //体重
                             if (eachtest.testcode == "D4.0020")
                             {
-                                myWorkSheet.Cells[peoplecount, 23] = eachtest.testresult;
+                                myWorkSheet.Cells[peoplecount, 24] = eachtest.testresult;
                             }
                             //血压
                             if (eachtest.testcode == "D4.0040")
@@ -165,13 +171,13 @@ namespace PatientDataExport
                                 try
                                 {
                                     string[] splitestring = eachtest.testresult.Split('/');
-                                    myWorkSheet.Cells[peoplecount, 24] = splitestring[0].ToString();
-                                    myWorkSheet.Cells[peoplecount, 25] = splitestring[1].ToString();
+                                    myWorkSheet.Cells[peoplecount, 25] = splitestring[0].ToString();
+                                    myWorkSheet.Cells[peoplecount, 26] = splitestring[1].ToString();
                                 }
                                 catch
                                 {
-                                    myWorkSheet.Cells[peoplecount, 24] = "空白";
                                     myWorkSheet.Cells[peoplecount, 25] = "空白";
+                                    myWorkSheet.Cells[peoplecount, 26] = "空白";
                                 }
                                 finally
                                 {
@@ -180,295 +186,293 @@ namespace PatientDataExport
                             //谷丙转氨酶（ALT）
                             if (eachtest.testcode == "Y1.0010")
                             {
-                                myWorkSheet.Cells[peoplecount, 45] = eachtest.testresult;
-                                myWorkSheet.Cells[peoplecount, 46] = eachtest.testlower;
-                                myWorkSheet.Cells[peoplecount, 47] = eachtest.testhigher;
+                                myWorkSheet.Cells[peoplecount, 46] = eachtest.testresult;
+                                myWorkSheet.Cells[peoplecount, 47] = eachtest.testlower;
+                                myWorkSheet.Cells[peoplecount, 48] = eachtest.testhigher;
                             }
                             //总胆红素(TBIL)
                             if (eachtest.testcode == "Y1.0050")
                             {
-                                myWorkSheet.Cells[peoplecount, 48] = eachtest.testresult;
-                                myWorkSheet.Cells[peoplecount, 49] = eachtest.testlower;
-                                myWorkSheet.Cells[peoplecount, 50] = eachtest.testhigher;
+                                myWorkSheet.Cells[peoplecount, 49] = eachtest.testresult;
+                                myWorkSheet.Cells[peoplecount, 50] = eachtest.testlower;
+                                myWorkSheet.Cells[peoplecount, 51] = eachtest.testhigher;
                             }
                             //直接胆红素(DBIL)
                             if (eachtest.testcode == "Y1.0060")
                             {
-                                myWorkSheet.Cells[peoplecount, 51] = eachtest.testresult;
-                                myWorkSheet.Cells[peoplecount, 52] = eachtest.testlower;
-                                myWorkSheet.Cells[peoplecount, 53] = eachtest.testhigher;
+                                myWorkSheet.Cells[peoplecount, 52] = eachtest.testresult;
+                                myWorkSheet.Cells[peoplecount, 53] = eachtest.testlower;
+                                myWorkSheet.Cells[peoplecount, 54] = eachtest.testhigher;
                             }
                             //总蛋白(TP)
                             if (eachtest.testcode == "Y1.0080")
                             {
-                                myWorkSheet.Cells[peoplecount, 54] = eachtest.testresult;
-                                myWorkSheet.Cells[peoplecount, 55] = eachtest.testlower;
-                                myWorkSheet.Cells[peoplecount, 56] = eachtest.testhigher;
+                                myWorkSheet.Cells[peoplecount, 55] = eachtest.testresult;
+                                myWorkSheet.Cells[peoplecount, 56] = eachtest.testlower;
+                                myWorkSheet.Cells[peoplecount, 57] = eachtest.testhigher;
                             }
                             //白蛋白(ALB)
                             if (eachtest.testcode == "Y1.0090")
                             {
-                                myWorkSheet.Cells[peoplecount, 57] = eachtest.testresult;
-                                myWorkSheet.Cells[peoplecount, 58] = eachtest.testlower;
-                                myWorkSheet.Cells[peoplecount, 59] = eachtest.testhigher;
+                                myWorkSheet.Cells[peoplecount, 58] = eachtest.testresult;
+                                myWorkSheet.Cells[peoplecount, 59] = eachtest.testlower;
+                                myWorkSheet.Cells[peoplecount, 60] = eachtest.testhigher;
                             }
                             //球蛋白(GLB)
                             if (eachtest.testcode == "Y1.0100")
                             {
-                                myWorkSheet.Cells[peoplecount, 60] = eachtest.testresult;
-                                myWorkSheet.Cells[peoplecount, 61] = eachtest.testlower;
-                                myWorkSheet.Cells[peoplecount, 62] = eachtest.testhigher;
+                                myWorkSheet.Cells[peoplecount, 61] = eachtest.testresult;
+                                myWorkSheet.Cells[peoplecount, 62] = eachtest.testlower;
+                                myWorkSheet.Cells[peoplecount, 63] = eachtest.testhigher;
                             }
                             //尿素氮(BUN)
                             if (eachtest.testcode == "Y2.0010")
                             {
-                                myWorkSheet.Cells[peoplecount, 63] = eachtest.testresult;
-                                myWorkSheet.Cells[peoplecount, 64] = eachtest.testlower;
-                                myWorkSheet.Cells[peoplecount, 65] = eachtest.testhigher;
+                                myWorkSheet.Cells[peoplecount, 64] = eachtest.testresult;
+                                myWorkSheet.Cells[peoplecount, 65] = eachtest.testlower;
+                                myWorkSheet.Cells[peoplecount, 66] = eachtest.testhigher;
                             }
                             //肌酐(Cr)
                             if (eachtest.testcode == "Y2.0020")
                             {
-                                myWorkSheet.Cells[peoplecount, 66] = eachtest.testresult;
-                                myWorkSheet.Cells[peoplecount, 67] = eachtest.testlower;
-                                myWorkSheet.Cells[peoplecount, 68] = eachtest.testhigher;
+                                myWorkSheet.Cells[peoplecount, 67] = eachtest.testresult;
+                                myWorkSheet.Cells[peoplecount, 68] = eachtest.testlower;
+                                myWorkSheet.Cells[peoplecount, 69] = eachtest.testhigher;
                             }
                             //尿酸(UA)
                             if (eachtest.testcode == "Y2.0030")
                             {
-                                myWorkSheet.Cells[peoplecount, 69] = eachtest.testresult;
-                                myWorkSheet.Cells[peoplecount, 70] = eachtest.testlower;
-                                myWorkSheet.Cells[peoplecount, 71] = eachtest.testhigher;
+                                myWorkSheet.Cells[peoplecount, 70] = eachtest.testresult;
+                                myWorkSheet.Cells[peoplecount, 71] = eachtest.testlower;
+                                myWorkSheet.Cells[peoplecount, 72] = eachtest.testhigher;
                             }
                             //葡萄糖(GLU)
                             if (eachtest.testcode == "Y3.0010")
                             {
-                                myWorkSheet.Cells[peoplecount, 72] = eachtest.testresult;
-                                myWorkSheet.Cells[peoplecount, 73] = eachtest.testlower;
-                                myWorkSheet.Cells[peoplecount, 74] = eachtest.testhigher;
+                                myWorkSheet.Cells[peoplecount, 73] = eachtest.testresult;
+                                myWorkSheet.Cells[peoplecount, 74] = eachtest.testlower;
+                                myWorkSheet.Cells[peoplecount, 75] = eachtest.testhigher;
                             }
                             //糖化血红蛋白
                             if (eachtest.testcode == "Y3.0030")
                             {
-                                myWorkSheet.Cells[peoplecount, 75] = eachtest.testresult;
-                                myWorkSheet.Cells[peoplecount, 76] = eachtest.testlower;
-                                myWorkSheet.Cells[peoplecount, 77] = eachtest.testhigher;
+                                myWorkSheet.Cells[peoplecount, 76] = eachtest.testresult;
+                                myWorkSheet.Cells[peoplecount, 77] = eachtest.testlower;
+                                myWorkSheet.Cells[peoplecount, 78] = eachtest.testhigher;
                             }
                             //总胆固醇(CHOL)
                             if (eachtest.testcode == "Y4.0010")
                             {
-                                myWorkSheet.Cells[peoplecount, 78] = eachtest.testresult;
-                                myWorkSheet.Cells[peoplecount, 79] = eachtest.testlower;
-                                myWorkSheet.Cells[peoplecount, 80] = eachtest.testhigher;
+                                myWorkSheet.Cells[peoplecount, 79] = eachtest.testresult;
+                                myWorkSheet.Cells[peoplecount, 80] = eachtest.testlower;
+                                myWorkSheet.Cells[peoplecount, 81] = eachtest.testhigher;
                             }
                             //甘油三酯(TG)
                             if (eachtest.testcode == "Y4.0020")
                             {
-                                myWorkSheet.Cells[peoplecount, 78] = eachtest.testresult;
-                                myWorkSheet.Cells[peoplecount, 79] = eachtest.testlower;
-                                myWorkSheet.Cells[peoplecount, 80] = eachtest.testhigher;
+                                myWorkSheet.Cells[peoplecount, 82] = eachtest.testresult;
+                                myWorkSheet.Cells[peoplecount, 83] = eachtest.testlower;
+                                myWorkSheet.Cells[peoplecount, 84] = eachtest.testhigher;
                             }
                             //高密度脂蛋白
                             if (eachtest.testcode == "Y4.0030")
                             {
-                                myWorkSheet.Cells[peoplecount, 84] = eachtest.testresult;
-                                myWorkSheet.Cells[peoplecount, 85] = eachtest.testlower;
-                                myWorkSheet.Cells[peoplecount, 86] = eachtest.testhigher;
+                                myWorkSheet.Cells[peoplecount, 85] = eachtest.testresult;
+                                myWorkSheet.Cells[peoplecount, 86] = eachtest.testlower;
+                                myWorkSheet.Cells[peoplecount, 87] = eachtest.testhigher;
                             }
                             //低密度脂蛋白
                             if (eachtest.testcode == "Y4.0040")
                             {
-                                myWorkSheet.Cells[peoplecount, 86] = eachtest.testresult;
-                                myWorkSheet.Cells[peoplecount, 87] = eachtest.testlower;
-                                myWorkSheet.Cells[peoplecount, 88] = eachtest.testhigher;
+                                myWorkSheet.Cells[peoplecount, 88] = eachtest.testresult;
+                                myWorkSheet.Cells[peoplecount, 89] = eachtest.testlower;
+                                myWorkSheet.Cells[peoplecount, 90] = eachtest.testhigher;
                             }
                             //白细胞计数(WBC)
                             if (eachtest.testcode == "Y7.0100")
                             {
-                                myWorkSheet.Cells[peoplecount, 90] = eachtest.testresult;
-                                myWorkSheet.Cells[peoplecount, 91] = eachtest.testlower;
-                                myWorkSheet.Cells[peoplecount, 92] = eachtest.testhigher;
+                                myWorkSheet.Cells[peoplecount, 91] = eachtest.testresult;
+                                myWorkSheet.Cells[peoplecount, 92] = eachtest.testlower;
+                                myWorkSheet.Cells[peoplecount, 93] = eachtest.testhigher;
                             }
                             //淋巴细胞绝对值
                             if (eachtest.testcode == "Y7.0120")
                             {
-                                myWorkSheet.Cells[peoplecount, 93] = eachtest.testresult;
-                                myWorkSheet.Cells[peoplecount, 94] = eachtest.testlower;
-                                myWorkSheet.Cells[peoplecount, 95] = eachtest.testhigher;
+                                myWorkSheet.Cells[peoplecount, 94] = eachtest.testresult;
+                                myWorkSheet.Cells[peoplecount, 95] = eachtest.testlower;
+                                myWorkSheet.Cells[peoplecount, 96] = eachtest.testhigher;
                             }
                             //中间细胞绝对值
                             if (eachtest.testcode == "Y7.0380")
                             {
-                                myWorkSheet.Cells[peoplecount, 96] = eachtest.testresult;
-                                myWorkSheet.Cells[peoplecount, 97] = eachtest.testlower;
-                                myWorkSheet.Cells[peoplecount, 98] = eachtest.testhigher;
+                                myWorkSheet.Cells[peoplecount, 97] = eachtest.testresult;
+                                myWorkSheet.Cells[peoplecount, 98] = eachtest.testlower;
+                                myWorkSheet.Cells[peoplecount, 99] = eachtest.testhigher;
                             }
                             //粒细胞绝对值
                             if (eachtest.testcode == "Y7.0134")
                             {
-                                myWorkSheet.Cells[peoplecount, 99] = eachtest.testresult;
-                                myWorkSheet.Cells[peoplecount, 100] = eachtest.testlower;
-                                myWorkSheet.Cells[peoplecount, 101] = eachtest.testhigher;
+                                myWorkSheet.Cells[peoplecount, 100] = eachtest.testresult;
+                                myWorkSheet.Cells[peoplecount, 101] = eachtest.testlower;
+                                myWorkSheet.Cells[peoplecount, 102] = eachtest.testhigher;
                             }
                             //红细胞计数(RBC)
                             if (eachtest.testcode == "Y7.0010")
                             {
-                                myWorkSheet.Cells[peoplecount, 102] = eachtest.testresult;
-                                myWorkSheet.Cells[peoplecount, 103] = eachtest.testlower;
-                                myWorkSheet.Cells[peoplecount, 104] = eachtest.testhigher;
+                                myWorkSheet.Cells[peoplecount, 103] = eachtest.testresult;
+                                myWorkSheet.Cells[peoplecount, 104] = eachtest.testlower;
+                                myWorkSheet.Cells[peoplecount, 105] = eachtest.testhigher;
                             }
                             //血红蛋白(HGB)
                             if (eachtest.testcode == "Y7.0020")
                             {
-                                myWorkSheet.Cells[peoplecount, 105] = eachtest.testresult;
-                                myWorkSheet.Cells[peoplecount, 106] = eachtest.testlower;
-                                myWorkSheet.Cells[peoplecount, 107] = eachtest.testhigher;
+                                myWorkSheet.Cells[peoplecount, 106] = eachtest.testresult;
+                                myWorkSheet.Cells[peoplecount, 107] = eachtest.testlower;
+                                myWorkSheet.Cells[peoplecount, 108] = eachtest.testhigher;
                             }
                             //RBC平均HGB浓度(MCHC)
                             if (eachtest.testcode == "Y7.0060")
                             {
-                                myWorkSheet.Cells[peoplecount, 108] = eachtest.testresult;
-                                myWorkSheet.Cells[peoplecount, 109] = eachtest.testlower;
-                                myWorkSheet.Cells[peoplecount, 110] = eachtest.testhigher;
+                                myWorkSheet.Cells[peoplecount, 109] = eachtest.testresult;
+                                myWorkSheet.Cells[peoplecount, 110] = eachtest.testlower;
+                                myWorkSheet.Cells[peoplecount, 111] = eachtest.testhigher;
                             }
                             //红细胞平均体积(MCV)
                             if (eachtest.testcode == "Y7.0040")
                             {
-                                myWorkSheet.Cells[peoplecount, 111] = eachtest.testresult;
-                                myWorkSheet.Cells[peoplecount, 112] = eachtest.testlower;
-                                myWorkSheet.Cells[peoplecount, 113] = eachtest.testhigher;
+                                myWorkSheet.Cells[peoplecount, 112] = eachtest.testresult;
+                                myWorkSheet.Cells[peoplecount, 113] = eachtest.testlower;
+                                myWorkSheet.Cells[peoplecount, 114] = eachtest.testhigher;
                             }
                             //RBC平均HGB含量(MCH)
                             if (eachtest.testcode == "Y7.0400")
                             {
-                                myWorkSheet.Cells[peoplecount, 114] = eachtest.testresult;
-                                myWorkSheet.Cells[peoplecount, 115] = eachtest.testlower;
-                                myWorkSheet.Cells[peoplecount, 116] = eachtest.testhigher;
+                                myWorkSheet.Cells[peoplecount, 115] = eachtest.testresult;
+                                myWorkSheet.Cells[peoplecount, 116] = eachtest.testlower;
+                                myWorkSheet.Cells[peoplecount, 117] = eachtest.testhigher;
                             }
                             //红细胞分布宽度（RDW）
                             if (eachtest.testcode == "Y7.0070")
                             {
-                                myWorkSheet.Cells[peoplecount, 117] = eachtest.testresult;
-                                myWorkSheet.Cells[peoplecount, 118] = eachtest.testlower;
-                                myWorkSheet.Cells[peoplecount, 119] = eachtest.testhigher;
+                                myWorkSheet.Cells[peoplecount, 118] = eachtest.testresult;
+                                myWorkSheet.Cells[peoplecount, 119] = eachtest.testlower;
+                                myWorkSheet.Cells[peoplecount, 120] = eachtest.testhigher;
                             }
                             //红细胞压积(HCT) 又称红细胞比容
                             if (eachtest.testcode == "Y7.0275")
                             {
-                                myWorkSheet.Cells[peoplecount, 120] = eachtest.testresult;
-                                myWorkSheet.Cells[peoplecount, 121] = eachtest.testlower;
-                                myWorkSheet.Cells[peoplecount, 122] = eachtest.testhigher;
+                                myWorkSheet.Cells[peoplecount, 121] = eachtest.testresult;
+                                myWorkSheet.Cells[peoplecount, 122] = eachtest.testlower;
+                                myWorkSheet.Cells[peoplecount, 123] = eachtest.testhigher;
                             }
                             //血小板计数（PLT）	
                             if (eachtest.testcode == "Y7.0210")
                             {
-                                myWorkSheet.Cells[peoplecount, 123] = eachtest.testresult;
-                                myWorkSheet.Cells[peoplecount, 124] = eachtest.testlower;
-                                myWorkSheet.Cells[peoplecount, 125] = eachtest.testhigher;
+                                myWorkSheet.Cells[peoplecount, 124] = eachtest.testresult;
+                                myWorkSheet.Cells[peoplecount, 125] = eachtest.testlower;
+                                myWorkSheet.Cells[peoplecount, 126] = eachtest.testhigher;
                             }
                             //尿葡萄糖
                             if (eachtest.testcode == "Y8.0060")
                             {
-                                myWorkSheet.Cells[peoplecount, 126] = eachtest.testresult;
+                                myWorkSheet.Cells[peoplecount, 127] = eachtest.testresult;
                             }
                             //尿胆红素
                             if (eachtest.testcode == "Y8.0090")
                             {
-                                myWorkSheet.Cells[peoplecount, 127] = eachtest.testresult;
+                                myWorkSheet.Cells[peoplecount, 128] = eachtest.testresult;
                             }
                             //尿酮体
                             if (eachtest.testcode == "Y8.0070")
                             {
-                                myWorkSheet.Cells[peoplecount, 128] = eachtest.testresult;
+                                myWorkSheet.Cells[peoplecount, 129] = eachtest.testresult;
                             }
                             //尿比重
                             if (eachtest.testcode == "Y8.0040")
                             {
-                                myWorkSheet.Cells[peoplecount, 129] = eachtest.testresult;
-                                myWorkSheet.Cells[peoplecount, 130] = eachtest.testlower;
-                                myWorkSheet.Cells[peoplecount, 131] = eachtest.testhigher;
+                                myWorkSheet.Cells[peoplecount, 130] = eachtest.testresult;
+                                myWorkSheet.Cells[peoplecount, 131] = eachtest.testlower;
+                                myWorkSheet.Cells[peoplecount, 132] = eachtest.testhigher;
                             }
                             //尿潜血、尿红细胞
                             if (eachtest.testcode == "Y8.0110")
                             {
-                                myWorkSheet.Cells[peoplecount, 132] = eachtest.testresult;
+                                myWorkSheet.Cells[peoplecount, 133] = eachtest.testresult;
                             }
                             //尿酸碱度
                             if (eachtest.testcode == "Y8.0030")
                             {
-                                myWorkSheet.Cells[peoplecount, 133] = eachtest.testresult;
-                                myWorkSheet.Cells[peoplecount, 134] = eachtest.testlower;
-                                myWorkSheet.Cells[peoplecount, 135] = eachtest.testhigher;
+                                myWorkSheet.Cells[peoplecount, 134] = eachtest.testresult;
+                                myWorkSheet.Cells[peoplecount, 135] = eachtest.testlower;
+                                myWorkSheet.Cells[peoplecount, 136] = eachtest.testhigher;
                             }
                             //尿蛋白
                             if (eachtest.testcode == "Y8.0050")
                             {
-                                myWorkSheet.Cells[peoplecount, 136] = eachtest.testresult;
+                                myWorkSheet.Cells[peoplecount, 137] = eachtest.testresult;
                             }
                             //尿胆原
                             if (eachtest.testcode == "Y8.0080")
                             {
-                                myWorkSheet.Cells[peoplecount, 137] = eachtest.testresult;
+                                myWorkSheet.Cells[peoplecount, 138] = eachtest.testresult;
                             }
                             //尿亚硝酸盐
                             if (eachtest.testcode == "Y8.0100")
                             {
-                                myWorkSheet.Cells[peoplecount, 138] = eachtest.testresult;
+                                myWorkSheet.Cells[peoplecount, 139] = eachtest.testresult;
                             }
                             //尿白细胞酯酶
                             if (eachtest.testcode == "Y8.0120")
                             {
-                                myWorkSheet.Cells[peoplecount, 139] = eachtest.testresult;
+                                myWorkSheet.Cells[peoplecount, 140] = eachtest.testresult;
                             }
                             //大便颜色
                             if (eachtest.testcode == "Y9.0020")
                             {
-                                myWorkSheet.Cells[peoplecount, 140] = eachtest.testresult;
+                                myWorkSheet.Cells[peoplecount, 141] = eachtest.testresult;
                             }
-                            //大便粘液 无检测项目
+                            //大便粘液 无检测项目 142
 
                             //大便潜血 免疫法 
                             if (eachtest.testcode == "Y9.0260")
                             {
-                                myWorkSheet.Cells[peoplecount, 142] = eachtest.testresult;
+                                myWorkSheet.Cells[peoplecount, 143] = eachtest.testresult;
                             }
                             //甲胎蛋白定量（AFP-N）		
                             if (eachtest.testcode == "YC.0030")
                             {
-                                myWorkSheet.Cells[peoplecount, 143] = eachtest.testresult;
-                                myWorkSheet.Cells[peoplecount, 144] = eachtest.testlower;
-                                myWorkSheet.Cells[peoplecount, 145] = eachtest.testhigher;
+                                myWorkSheet.Cells[peoplecount, 144] = eachtest.testresult;
+                                myWorkSheet.Cells[peoplecount, 145] = eachtest.testlower;
+                                myWorkSheet.Cells[peoplecount, 146] = eachtest.testhigher;
                             }
                             //癌胚抗原定量（CEA-N）		
                             if (eachtest.testcode == "YC.0040")
                             {
-                                myWorkSheet.Cells[peoplecount, 146] = eachtest.testresult;
-                                myWorkSheet.Cells[peoplecount, 147] = eachtest.testlower;
-                                myWorkSheet.Cells[peoplecount, 148] = eachtest.testhigher;
+                                myWorkSheet.Cells[peoplecount, 147] = eachtest.testresult;
+                                myWorkSheet.Cells[peoplecount, 148] = eachtest.testlower;
+                                myWorkSheet.Cells[peoplecount, 149] = eachtest.testhigher;
                             }
                             //糖类抗原（CA242）		
                             if (eachtest.testcode == "YC.0301")
                             {
-                                myWorkSheet.Cells[peoplecount, 149] = eachtest.testresult;
-                                myWorkSheet.Cells[peoplecount, 150] = eachtest.testlower;
-                                myWorkSheet.Cells[peoplecount, 151] = eachtest.testhigher;
+                                myWorkSheet.Cells[peoplecount, 150] = eachtest.testresult;
+                                myWorkSheet.Cells[peoplecount, 151] = eachtest.testlower;
+                                myWorkSheet.Cells[peoplecount, 152] = eachtest.testhigher;
                             }
                             //男：前列腺特异抗原（PSA）		
                             if (eachtest.testcode == "YC.0120")
                             {
-                                myWorkSheet.Cells[peoplecount, 152] = eachtest.testresult;
-                                myWorkSheet.Cells[peoplecount, 153] = eachtest.testlower;
-                                myWorkSheet.Cells[peoplecount, 154] = eachtest.testhigher;
+                                myWorkSheet.Cells[peoplecount, 153] = eachtest.testresult;
+                                myWorkSheet.Cells[peoplecount, 154] = eachtest.testlower;
+                                myWorkSheet.Cells[peoplecount, 155] = eachtest.testhigher;
                             }
                             //女：糖类抗原（CA15-3）		
                             if (eachtest.testcode == "YC.0160")
                             {
-                                myWorkSheet.Cells[peoplecount, 155] = eachtest.testresult;
-                                myWorkSheet.Cells[peoplecount, 156] = eachtest.testlower;
-                                myWorkSheet.Cells[peoplecount, 157] = eachtest.testhigher;
+                                myWorkSheet.Cells[peoplecount, 156] = eachtest.testresult;
+                                myWorkSheet.Cells[peoplecount, 157] = eachtest.testlower;
+                                myWorkSheet.Cells[peoplecount, 158] = eachtest.testhigher;
                             }
-                            //myWorkSheet.Cells[peoplecount, 195 + testNum] = eachtest.testcode;
-                            //myWorkSheet.Cells[peoplecount, 196 + testNum] = eachtest.testcode;
                         }
                     }
                 }
@@ -491,31 +495,28 @@ namespace PatientDataExport
                             //内科
                             if (eachdepart.deptcode == "D00" || eachdepart.deptcode == "D01")
                             {
-                                myWorkSheet.Cells[peoplecount, 26] = eachdepart.depresult.ToString();
+                                myWorkSheet.Cells[peoplecount, 27] = eachdepart.depresult.ToString();
                             }
                             //外科
-                            if (eachdepart.deptcode == "E00") myWorkSheet.Cells[peoplecount, 28] = eachdepart.depresult.ToString();
+                            if (eachdepart.deptcode == "E00") myWorkSheet.Cells[peoplecount, 29] = eachdepart.depresult.ToString();
                             //生殖泌尿
-                            if (eachdepart.deptcode == "E01") myWorkSheet.Cells[peoplecount, 35] = eachdepart.depresult.ToString();
+                            if (eachdepart.deptcode == "E01") myWorkSheet.Cells[peoplecount, 36] = eachdepart.depresult.ToString();
                             //耳鼻喉
                             if (eachdepart.deptcode == "H00" || eachdepart.deptcode == "H01") myWorkSheet.Cells[peoplecount, 36] = eachdepart.depresult.ToString();
                             //口腔
-                            if (eachdepart.deptcode == "I00") myWorkSheet.Cells[peoplecount, 37] = eachdepart.depresult.ToString();
+                            if (eachdepart.deptcode == "I00") myWorkSheet.Cells[peoplecount, 38] = eachdepart.depresult.ToString();
                             //眼科
-                            if (eachdepart.deptcode == "G00") myWorkSheet.Cells[peoplecount, 38] = eachdepart.depresult.ToString();
+                            if (eachdepart.deptcode == "G00") myWorkSheet.Cells[peoplecount, 39] = eachdepart.depresult.ToString();
                             //妇科
-                            if (eachdepart.deptcode == "J00") myWorkSheet.Cells[peoplecount, 39] = eachdepart.depresult.ToString();
+                            if (eachdepart.deptcode == "J00") myWorkSheet.Cells[peoplecount, 40] = eachdepart.depresult.ToString();
                             //神经科
-                            if (eachdepart.deptcode == "F00") myWorkSheet.Cells[peoplecount, 40] = eachdepart.depresult.ToString();
+                            if (eachdepart.deptcode == "F00") myWorkSheet.Cells[peoplecount, 41] = eachdepart.depresult.ToString();
                             //心电图
-                            if (eachdepart.deptcode == "M00") myWorkSheet.Cells[peoplecount, 41] = eachdepart.depresult.ToString();
+                            if (eachdepart.deptcode == "M00") myWorkSheet.Cells[peoplecount, 42] = eachdepart.depresult.ToString();
                             //胸片
-                            if (eachdepart.deptcode == "K00") myWorkSheet.Cells[peoplecount, 42] = eachdepart.depresult.ToString();
+                            if (eachdepart.deptcode == "K00") myWorkSheet.Cells[peoplecount, 43] = eachdepart.depresult.ToString();
                             //B超
-                            if (eachdepart.deptcode == "L00") myWorkSheet.Cells[peoplecount, 43] = eachdepart.depresult.ToString();
-                            //输出所有的结果
-                            //myWorkSheet.Cells[peoplecount, 230 + depNum] = eachdepart.deptcode;
-                            //myWorkSheet.Cells[peoplecount, 231 + depNum] = eachdepart.depresult;
+                            if (eachdepart.deptcode == "L00") myWorkSheet.Cells[peoplecount, 44] = eachdepart.depresult.ToString();
                         }
                         
                     }
@@ -531,10 +532,10 @@ namespace PatientDataExport
                     int i = 0;
                     foreach (var eachDisease in diseaseResult)
                     {
-                        myWorkSheet.Cells[peoplecount, 158 + i] = eachDisease.diagname;
-                        myWorkSheet.Cells[peoplecount, 159 + i] = eachDisease.diagcode;
+                        myWorkSheet.Cells[peoplecount, 159 + i] = eachDisease.diagname;
+                        myWorkSheet.Cells[peoplecount, 160 + i] = eachDisease.diagcode;
                         i=i+2;
-                        if (i > 30) break;
+                        if (i > 28) break;
                     }
                 }
                 catch { }
@@ -543,8 +544,8 @@ namespace PatientDataExport
                 try
                 {
                     var totalResult = (from s6 in myMedBaseEntities.hdatarep where checkpatient.checkcode == s6.checkcode select s6).Single();
-                    myWorkSheet.Cells[peoplecount, 190] = totalResult.hresult;
-                    myWorkSheet.Cells[peoplecount, 191] = totalResult.hadvice;
+                    myWorkSheet.Cells[peoplecount, 189] = totalResult.hresult;
+                    myWorkSheet.Cells[peoplecount, 190] = totalResult.hadvice;
                 }
                 catch { }
                 finally { }
@@ -558,7 +559,7 @@ namespace PatientDataExport
         private void btn_selectSavePath_Click(object sender, EventArgs e)
         {
             OpenFileDialog myFileDialog = new OpenFileDialog();
-            myFileDialog.Filter = "Excel|*.xls";
+            myFileDialog.Filter = "Excel|*.xlsx";
             if (myFileDialog.ShowDialog() == DialogResult.OK)
             {
                 txtbox_FilePath.Text = myFileDialog.FileName;
@@ -567,7 +568,7 @@ namespace PatientDataExport
 
         private void datePicker_startDate_ValueChanged(object sender, EventArgs e)
         {
-            if (datePicker_startDate.Value > Convert.ToDateTime("2015-1-1 00:00:00")) datePicker_startDate.Value = Convert.ToDateTime("2015-1-1 00:00:00");
+            if (datePicker_startDate.Value > Convert.ToDateTime("2017-1-1 00:00:00")) datePicker_startDate.Value = Convert.ToDateTime("2017-1-1 00:00:00");
             if (datePicker_startDate.Value < Convert.ToDateTime("2008-1-1 00:00:00")) datePicker_startDate.Value = Convert.ToDateTime("2008-1-1 00:00:00");
             lab_endDate.Text = datePicker_startDate.Value.AddYears(1).ToShortDateString();
         }

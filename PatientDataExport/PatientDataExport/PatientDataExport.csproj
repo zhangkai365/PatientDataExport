@@ -54,10 +54,55 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\CollectedInfoTable.cs">
+      <DependentUpon>PatientData.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\C_dict_manager.cs">
+      <DependentUpon>PatientData.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\C_dict_tbcode.cs">
+      <DependentUpon>PatientData.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\C_dict_tbdiscountRates.cs">
+      <DependentUpon>PatientData.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\C_dict_tbhtestcode.cs">
+      <DependentUpon>PatientData.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\C_dict_tbinterface.cs">
+      <DependentUpon>PatientData.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\C_dict_tbinterface_event.cs">
+      <DependentUpon>PatientData.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\C_dict_tbsalesman.cs">
+      <DependentUpon>PatientData.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\C_result_htaskacc_detail.cs">
+      <DependentUpon>PatientData.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\C_sdsl_StatResult.cs">
+      <DependentUpon>PatientData.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\C_sdsl_statTest.cs">
+      <DependentUpon>PatientData.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\discountRates_task.cs">
+      <DependentUpon>PatientData.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\discountRates_task_union.cs">
+      <DependentUpon>PatientData.tt</DependentUpon>
+    </Compile>
     <Compile Include="Data\dtproperties.cs">
       <DependentUpon>PatientData.tt</DependentUpon>
     </Compile>
+    <Compile Include="Data\hactdep.cs">
+      <DependentUpon>PatientData.tt</DependentUpon>
+    </Compile>
     <Compile Include="Data\hactdepdiag.cs">
+      <DependentUpon>PatientData.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\hactdepunion.cs">
       <DependentUpon>PatientData.tt</DependentUpon>
     </Compile>
     <Compile Include="Data\hactdiag.cs">
@@ -177,6 +222,12 @@
     <Compile Include="Data\hlogdata.cs">
       <DependentUpon>PatientData.tt</DependentUpon>
     </Compile>
+    <Compile Include="Data\hpaidrec.cs">
+      <DependentUpon>PatientData.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\hpaidrec_details.cs">
+      <DependentUpon>PatientData.tt</DependentUpon>
+    </Compile>
     <Compile Include="Data\hstatcharts.cs">
       <DependentUpon>PatientData.tt</DependentUpon>
     </Compile>
@@ -258,9 +309,6 @@
     <Compile Include="Data\htaskdiag.cs">
       <DependentUpon>PatientData.tt</DependentUpon>
     </Compile>
-    <Compile Include="Data\htaskdiagpost.cs">
-      <DependentUpon>PatientData.tt</DependentUpon>
-    </Compile>
     <Compile Include="Data\htaskgrp.cs">
       <DependentUpon>PatientData.tt</DependentUpon>
     </Compile>
@@ -270,7 +318,16 @@
     <Compile Include="Data\htaskmemb.cs">
       <DependentUpon>PatientData.tt</DependentUpon>
     </Compile>
+    <Compile Include="Data\hTaskMembEx.cs">
+      <DependentUpon>PatientData.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\hTaskMembImp.cs">
+      <DependentUpon>PatientData.tt</DependentUpon>
+    </Compile>
     <Compile Include="Data\htaskrep.cs">
+      <DependentUpon>PatientData.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\htaskunionfee.cs">
       <DependentUpon>PatientData.tt</DependentUpon>
     </Compile>
     <Compile Include="Data\htreedict.cs">
@@ -283,9 +340,6 @@
       <DependentUpon>PatientData.tt</DependentUpon>
     </Compile>
     <Compile Include="Data\libicd10.cs">
-      <DependentUpon>PatientData.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Data\libicd10zj.cs">
       <DependentUpon>PatientData.tt</DependentUpon>
     </Compile>
     <Compile Include="Data\libsnomed.cs">
@@ -327,31 +381,7 @@
     <Compile Include="Data\pisform.cs">
       <DependentUpon>PatientData.tt</DependentUpon>
     </Compile>
-    <Compile Include="Data\tj2.cs">
-      <DependentUpon>PatientData.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Data\tj2_backup.cs">
-      <DependentUpon>PatientData.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Data\tj2_backup2.cs">
-      <DependentUpon>PatientData.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Data\tj2_backup3.cs">
-      <DependentUpon>PatientData.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Data\tj2_deleted.cs">
-      <DependentUpon>PatientData.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Data\x1.cs">
-      <DependentUpon>PatientData.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Data\x11.cs">
-      <DependentUpon>PatientData.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Data\x2.cs">
-      <DependentUpon>PatientData.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Data\x22.cs">
+    <Compile Include="Data\pisuser.cs">
       <DependentUpon>PatientData.tt</DependentUpon>
     </Compile>
     <Compile Include="Data\ycheckmemb.cs">

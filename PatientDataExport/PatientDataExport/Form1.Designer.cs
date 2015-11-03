@@ -51,7 +51,7 @@
             // 
             // btn_beginProgress
             // 
-            this.btn_beginProgress.Location = new System.Drawing.Point(132, 259);
+            this.btn_beginProgress.Location = new System.Drawing.Point(132, 452);
             this.btn_beginProgress.Name = "btn_beginProgress";
             this.btn_beginProgress.Size = new System.Drawing.Size(144, 32);
             this.btn_beginProgress.TabIndex = 2;
@@ -66,7 +66,7 @@
             this.groupBox1.Controls.Add(this.txtbox_FilePath);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(383, 134);
+            this.groupBox1.Size = new System.Drawing.Size(456, 134);
             this.groupBox1.TabIndex = 11;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "文件保存路径";
@@ -92,11 +92,11 @@
             // 
             // txtbox_FilePath
             // 
-            this.txtbox_FilePath.Location = new System.Drawing.Point(38, 32);
+            this.txtbox_FilePath.Location = new System.Drawing.Point(11, 38);
             this.txtbox_FilePath.Name = "txtbox_FilePath";
-            this.txtbox_FilePath.Size = new System.Drawing.Size(310, 21);
+            this.txtbox_FilePath.Size = new System.Drawing.Size(429, 21);
             this.txtbox_FilePath.TabIndex = 10;
-            this.txtbox_FilePath.Text = "C:\\Users\\Win7x64_20140606\\Documents\\zk2.xls";
+            this.txtbox_FilePath.Text = "C:\\Users\\win7x64_20150617\\Desktop\\20151103PatientDataExport\\2015-11-03-1724.xlsx";
             // 
             // groupBox2
             // 
@@ -105,9 +105,9 @@
             this.groupBox2.Controls.Add(this.totalNum);
             this.groupBox2.Controls.Add(this.progressNum);
             this.groupBox2.Controls.Add(this.label2);
-            this.groupBox2.Location = new System.Drawing.Point(12, 162);
+            this.groupBox2.Location = new System.Drawing.Point(12, 348);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(383, 57);
+            this.groupBox2.Size = new System.Drawing.Size(456, 57);
             this.groupBox2.TabIndex = 12;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "文件处理进度";
@@ -151,7 +151,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(22, 25);
+            this.label2.Location = new System.Drawing.Point(28, 25);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(41, 12);
             this.label2.TabIndex = 7;
@@ -163,9 +163,9 @@
             this.groupBox3.Controls.Add(this.lab_endDate);
             this.groupBox3.Controls.Add(this.label5);
             this.groupBox3.Controls.Add(this.label4);
-            this.groupBox3.Location = new System.Drawing.Point(428, 12);
+            this.groupBox3.Location = new System.Drawing.Point(12, 180);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(402, 134);
+            this.groupBox3.Size = new System.Drawing.Size(456, 134);
             this.groupBox3.TabIndex = 13;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "处理数据时间范围";
@@ -176,7 +176,7 @@
             this.datePicker_startDate.Name = "datePicker_startDate";
             this.datePicker_startDate.Size = new System.Drawing.Size(147, 21);
             this.datePicker_startDate.TabIndex = 13;
-            this.datePicker_startDate.Value = new System.DateTime(2014, 1, 1, 0, 0, 0, 0);
+            this.datePicker_startDate.Value = new System.DateTime(2015, 1, 1, 0, 0, 0, 0);
             this.datePicker_startDate.ValueChanged += new System.EventHandler(this.datePicker_startDate_ValueChanged);
             // 
             // lab_endDate
@@ -186,7 +186,7 @@
             this.lab_endDate.Name = "lab_endDate";
             this.lab_endDate.Size = new System.Drawing.Size(89, 12);
             this.lab_endDate.TabIndex = 3;
-            this.lab_endDate.Text = "2014年12月31日";
+            this.lab_endDate.Text = "2015年12月31日";
             // 
             // label5
             // 
@@ -210,7 +210,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(842, 360);
+            this.ClientSize = new System.Drawing.Size(481, 496);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
